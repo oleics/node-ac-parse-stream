@@ -1,7 +1,7 @@
 {
   "name": "ac-parse-stream",
   "description": "Parse JSON data out of a stream and keep unparseable data in instances of Buffer.",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "author": "Oliver Leics <oliver.leics@gmail.com>",
   "license": "MIT",
   "repository": "oleics/node-ac-parse-stream",
@@ -15,7 +15,6 @@
     "lines"
   ],
   "main": "./parse-stream.js",
-  "dependencies": {
-  },
+  "dependencies": {},
   "engine": "node >= 0.12.0"
 }
