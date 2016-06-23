@@ -15,21 +15,23 @@ Usage
 -----
 
 ```js
-
 var parse = require('ac-parse-stream');
 
-parse(process.stdin, function(data){
+var promise = parse(process.stdin, function(data){
   if(data instanceof Buffer) {
     // we got unparseable data, maybe binary stuff or whatever
   } else {
-    // we got JSON parseable data that was terminated by a new-line
+    // we got JSON parseable data (new-line-terminated)
   }
 })
-  .then(function(){
-    // Stream did end.
+  .then(function(parserRemoved){
+    if(parserRemoved) {
+      // promise.removeParser() was called and the stream might still be open
+    } else {
+      // stream came to an end
+    }
   })
 ;
-
 ```
 
 MIT License

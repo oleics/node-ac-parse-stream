@@ -5,8 +5,8 @@ var NLB_LEN = NLB.length;
 module.exports = parseStream;
 
 function parseStream(stream, cb) {
-
-  return new Promise(function(resolve, reject) {
+  var removeParser;
+  var promise = new Promise(function(resolve, reject) {
     var b = new Buffer(0);
     var bi = 0;
     var bl = 0;
@@ -16,20 +16,29 @@ function parseStream(stream, cb) {
     stream.on('data', onData);
     stream.once('end', onEnd);
 
-    function onData(d){
+    function onData(d) {
       b = Buffer.concat([b, d]);
       parseBuffer();
     }
 
-    function onEnd(){
+    function onEnd() {
+      cleanup();
+      resolve();
+    }
+
+    function cleanup() {
       stream.removeListener('data', onData);
       parseBuffer(true);
+      // Trigger GC for everything.
       b = null;
       bi = null;
       bl = null;
       i = null;
       lines = null;
-      resolve();
+      // And I mean really everything
+      removeParser = null;
+      promise.removeParser = null; // Yes, everything. And break bad code too.
+      promise = null;
     }
 
     function parseBuffer(flush) {
@@ -78,5 +87,19 @@ function parseStream(stream, cb) {
       strb = null;
       data = null;
     }
+
+    function unbind() {
+      stream.removeListener('end', onEnd);
+      cleanup();
+      resolve(true);
+    }
+
+    removeParser = unbind;
   });
+
+  promise.removeParser = function() {
+    removeParser();
+  };
+
+  return promise;
 }
